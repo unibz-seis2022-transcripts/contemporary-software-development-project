@@ -7,8 +7,22 @@ export type Event = {
   tickets: number;
 };
 
-let events: Event[] = [];
 const EVENT_STORAGE_NAME = 'events';
+
+let events: Event[] = [];
+
+export class DuplicateEventError extends Error {
+  constructor(event?: Event) {
+    let errorMessage = 'Duplicate Event Error. ';
+    if (event) {
+      errorMessage += `Event with name "${
+        event.name
+      }" already exists on day ${event.date.toDateString()}.`;
+    }
+
+    super(errorMessage);
+  }
+}
 
 export const initEvents = async (): Promise<void> => {
   const hostStoragePath = './storage/events';
@@ -20,11 +34,12 @@ export const initEvents = async (): Promise<void> => {
 const checkForDuplicateEvent = (newEvent: Event): void => {
   if (
     events.find(
-      (event) => event.date === newEvent.date && event.name === newEvent.name,
+      (event) =>
+        event.date.getTime() === newEvent.date.getTime() &&
+        event.name === newEvent.name,
     )
   ) {
-    // TODO: Create interface for duplicate event error
-    throw new Error();
+    throw new DuplicateEventError(newEvent);
   }
 };
 

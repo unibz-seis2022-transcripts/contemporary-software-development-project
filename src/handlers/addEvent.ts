@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { addEvent, Event } from '../model/event.js';
+import { addEvent, DuplicateEventError, Event } from '../model/event.js';
 
 export const addEventHandler: RequestHandler = (req, res) => {
   const name = req.query['name'] as string;
@@ -14,7 +14,16 @@ export const addEventHandler: RequestHandler = (req, res) => {
     tickets,
   };
 
-  addEvent(event);
+  try {
+    addEvent(event);
+  } catch (error) {
+    if (error instanceof DuplicateEventError) {
+      res.send(error.message);
+    } else {
+      console.log('An unexpected error occured: ', error);
+      res.send('An unexpected error occured.');
+    }
+  }
 
   res.send(`Created event with id: ${event.id}`);
 };
