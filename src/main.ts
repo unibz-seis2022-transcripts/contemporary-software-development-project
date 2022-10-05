@@ -1,6 +1,7 @@
 import express from 'express';
 import { addEventHandler } from './handlers/addEvent.js';
 import { deleteEventHandler } from './handlers/deleteEvent.js';
+import { getEventsHandler } from './handlers/events.js';
 import { initEvents } from './model/event.js';
 
 await initEvents();
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 const router = express.Router();
 router.post('/addEvent', addEventHandler);
 router.post('/deleteevent', deleteEventHandler);
+router.get('/events', getEventsHandler);
 
 app.use(router);
 

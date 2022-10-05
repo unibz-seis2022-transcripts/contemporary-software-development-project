@@ -4,7 +4,8 @@ export type Event = {
   id: string;
   name: string;
   date: Date;
-  tickets: number;
+  ticketsTotal: number;
+  ticketsSold: number;
 };
 
 const EVENT_STORAGE_NAME = 'events';
@@ -62,4 +63,8 @@ export const deleteEvent = (eventId: string): void => {
   }
   events.splice(indexOfEvent);
   storage.setItem(EVENT_STORAGE_NAME, events);
+};
+
+export const getEvents = (): Event[] => {
+  return events;
 };

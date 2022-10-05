@@ -11,7 +11,8 @@ export const addEventHandler: RequestHandler = (req, res) => {
     id: uuidv4(),
     name,
     date,
-    tickets,
+    ticketsTotal: tickets,
+    ticketsSold: 0,
   };
 
   try {
