@@ -53,3 +53,13 @@ export const addEvent = (newEvent: Event): void => {
   storage.setItem(EVENT_STORAGE_NAME, events);
   console.log(`Added ${JSON.stringify(newEvent)} to list of events`);
 };
+
+export const deleteEvent = (eventId: string): void => {
+  const indexOfEvent = events.findIndex((event) => event.id === eventId);
+
+  if (indexOfEvent === -1) {
+    return;
+  }
+  events.splice(indexOfEvent);
+  storage.setItem(EVENT_STORAGE_NAME, events);
+};
