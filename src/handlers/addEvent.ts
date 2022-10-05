@@ -18,12 +18,12 @@ export const addEventHandler: RequestHandler = (req, res) => {
     addEvent(event);
   } catch (error) {
     if (error instanceof DuplicateEventError) {
-      res.send(error.message);
+      return res.status(400).send(error.message);
     } else {
       console.log('An unexpected error occured: ', error);
-      res.send('An unexpected error occured.');
+      return res.status(500).send('An unexpected error occured.');
     }
   }
 
-  res.send(`Created event with id: ${event.id}`);
+  return res.status(201).send({ eventId: event.id });
 };
