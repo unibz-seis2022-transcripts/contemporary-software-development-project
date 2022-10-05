@@ -27,7 +27,10 @@ export class DuplicateEventError extends Error {
 export const initEvents = async (): Promise<void> => {
   const hostStoragePath = './storage/events';
   await storage.init({ dir: hostStoragePath, logging: true, encoding: 'utf8' });
-  events = (await storage.getItem(EVENT_STORAGE_NAME)) || [];
+  const persistedEvents = (await storage.getItem(EVENT_STORAGE_NAME)) || [];
+  events = persistedEvents.map((event) => {
+    return { ...event, date: new Date(event.date) };
+  });
   console.log(`Currently stored events: ${JSON.stringify(events)}`);
 };
 
