@@ -1,5 +1,8 @@
 import express from 'express';
 import { addEventHandler } from './handlers/addEvent.js';
+import { initEvents } from './model/event.js';
+
+await initEvents();
 
 const app = express();
 const port = 3000;
