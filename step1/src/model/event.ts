@@ -36,13 +36,13 @@ export const initEvents = async (): Promise<void> => {
 };
 
 const checkForDuplicateEvent = (newEvent: Event): void => {
-  if (
-    events.find(
-      (event) =>
-        event.date.getTime() === newEvent.date.getTime() &&
-        event.name === newEvent.name,
-    )
-  ) {
+  const possibleDuplicate = events.find(
+    (event) =>
+      event.date.getTime() === newEvent.date.getTime() &&
+      event.name === newEvent.name,
+  );
+
+  if (possibleDuplicate) {
     throw new DuplicateEventError(newEvent);
   }
 };
