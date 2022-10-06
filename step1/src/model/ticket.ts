@@ -9,16 +9,19 @@ export type Ticket = {
 
 const TICKET_STORAGE_NAME = 'tickets';
 
-let tickets: Ticket[] = [];
+const tickets: { [id: string]: Ticket } = {};
 
 export const initTickets = async (): Promise<void> => {
   const hostStoragePath = './tickets.json';
   await storage.init({ dir: hostStoragePath, logging: true });
-  const persistedTickets = (await storage.getItem(TICKET_STORAGE_NAME)) || [];
-  tickets = persistedTickets.map((ticket) => {
-    return { ...ticket, soldOn: new Date(ticket.soldOn) };
+  const persistedTickets = (await storage.getItem(TICKET_STORAGE_NAME)) || {};
+
+  Object.keys(persistedTickets).forEach((ticketKey) => {
+    const ticket = persistedTickets[ticketKey];
+    tickets[ticketKey] = { ...ticket, soldOn: new Date(ticket.date) };
   });
-  console.log(`Currently stored tickets: ${persistedTickets}`);
+
+  console.log(`Currently stored tickets: ${JSON.stringify(persistedTickets)}`);
 };
 
 export const sellTicket = (ticket: Ticket) => {};
