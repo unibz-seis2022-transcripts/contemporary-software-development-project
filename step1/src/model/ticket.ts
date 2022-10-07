@@ -12,7 +12,7 @@ const TICKET_STORAGE_NAME = 'tickets';
 const tickets: { [id: string]: Ticket } = {};
 
 export const initTickets = async (): Promise<void> => {
-  const hostStoragePath = './tickets.json';
+  const hostStoragePath = './storage/tickets';
   await storage.init({ dir: hostStoragePath, logging: true });
   const persistedTickets = (await storage.getItem(TICKET_STORAGE_NAME)) || {};
 
