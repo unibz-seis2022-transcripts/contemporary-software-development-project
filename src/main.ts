@@ -25,7 +25,7 @@ const router = express.Router();
 router.post('/addEvent', addEventHandler);
 router.post('/deleteevent', deleteEventHandler);
 router.get('/events', getEventsHandler);
-router.post('/searchTickets', searchTicketsHandler);
+router.get('/searchTickets', searchTicketsHandler);
 
 router.post('/reserveticket', reserveTicketHandler);
 router.post('/deleteticket', deleteTicketHandler);

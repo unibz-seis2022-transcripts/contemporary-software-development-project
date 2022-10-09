@@ -3,7 +3,7 @@ import { EventSoldOutError, reserveTicketForEvent } from '../model/event.js';
 import { reserveTicket } from '../model/ticket.js';
 
 export const reserveTicketHandler: RequestHandler = (req, res) => {
-  const eventId = req.query['id'] as string;
+  const eventId = req.query['event'] as string;
   const owner = req.query['name'] as string;
 
   try {
