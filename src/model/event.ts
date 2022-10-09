@@ -5,7 +5,7 @@ import {
   IndexedPersistedEvents,
 } from '../types.js';
 import { v4 as uuid } from 'uuid';
-import { initStorage, setItem } from './persist.js';
+import { getItem, setItem } from './persist.js';
 
 const eventsItemName = 'events';
 
@@ -13,10 +13,8 @@ let events: IndexedEvents;
 
 export async function initEvents(): Promise<void> {
   events = {};
-  const persistedEvents = await initStorage<IndexedPersistedEvents>(
-    './storage/events',
-    eventsItemName,
-  );
+  const persistedEvents =
+    (await getItem<IndexedPersistedEvents>(eventsItemName)) || {};
 
   Object.keys(persistedEvents).forEach((eventKey) => {
     const event = persistedEvents[eventKey];

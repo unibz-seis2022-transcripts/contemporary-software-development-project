@@ -5,7 +5,7 @@ import {
   TicketRequest,
 } from '../types.js';
 import { v4 as uuid } from 'uuid';
-import { initStorage, setItem } from './persist.js';
+import { getItem, setItem } from './persist.js';
 
 const ticketsItemName = 'tickets';
 
@@ -13,10 +13,8 @@ let tickets: IndexedTickets = {};
 
 export const initTickets = async (): Promise<void> => {
   tickets = {};
-  const persistedTickets = await initStorage<IndexedPersistedTickets>(
-    './storage/tickets',
-    ticketsItemName,
-  );
+  const persistedTickets =
+    (await getItem<IndexedPersistedTickets>(ticketsItemName)) || {};
 
   Object.keys(persistedTickets).forEach((ticketKey) => {
     const ticket = persistedTickets[ticketKey];
@@ -41,6 +39,7 @@ export const deleteTicket = (ticketId: string): string => {
   const ticket = tickets[ticketId];
   const eventId = ticket.eventId;
   delete tickets[ticketId];
+  setItem<IndexedTickets>(ticketsItemName, tickets);
 
   return eventId;
 };

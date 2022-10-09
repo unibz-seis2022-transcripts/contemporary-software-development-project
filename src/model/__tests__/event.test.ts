@@ -14,7 +14,7 @@ import {
   deleteTicketForEvent,
 } from '../event.js';
 import { v4 as uuid } from 'uuid';
-import { initStorage, setItem } from '../persist.js';
+import { getItem, setItem } from '../persist.js';
 
 jest.mock('uuid');
 jest.mock('../persist.js');
@@ -25,7 +25,7 @@ const loadEvents = async (events: PersistedEvent[]): Promise<void> => {
     indexedEvents[event.id] = event;
   });
 
-  jest.mocked(initStorage).mockResolvedValueOnce(indexedEvents);
+  jest.mocked(getItem).mockResolvedValueOnce(indexedEvents);
   await initEvents();
 };
 

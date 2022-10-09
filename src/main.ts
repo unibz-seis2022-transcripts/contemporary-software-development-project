@@ -7,8 +7,10 @@ import { getTicketsHandler } from './handlers/getTickets.js';
 import { reserveTicketHandler } from './handlers/reserveTicket.js';
 import { searchTicketsHandler } from './handlers/searchTickets.js';
 import { initEvents } from './model/event.js';
+import { initStorage } from './model/persist.js';
 import { initTickets } from './model/ticket.js';
 
+await initStorage('./storage');
 await initEvents();
 await initTickets();
 
