@@ -1,23 +1,22 @@
 import { RequestHandler } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { addEvent, DuplicateEventError } from '../model/event.js';
-import { Event } from '../types.js';
+import { EventRequest } from '../types.js';
 
 export const addEventHandler: RequestHandler = (req, res) => {
   const name = req.query['name'] as string;
-  const date = new Date(req.query['date'] as string);
+  const date = req.query['date'] as string;
   const tickets = +req.query['tickets'];
 
-  const event: Event = {
-    id: uuidv4(),
+  const eventRequest: EventRequest = {
     name,
     date,
     ticketsTotal: tickets,
-    ticketsSold: 0,
   };
 
+  let id: string;
+
   try {
-    addEvent(event);
+    id = addEvent(eventRequest);
   } catch (error) {
     if (error instanceof DuplicateEventError) {
       return res.status(400).send(error.message);
@@ -27,5 +26,5 @@ export const addEventHandler: RequestHandler = (req, res) => {
     }
   }
 
-  return res.status(201).send({ eventId: event.id });
+  return res.status(201).send({ eventId: id });
 };
