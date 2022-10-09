@@ -19,9 +19,19 @@ export type PersistedEvent = Omit<Event, 'date'> & {
 export type IndexedEvents = { [id: string]: Event };
 export type IndexedPersistedEvents = { [id: string]: PersistedEvent };
 
-export type Ticket = {
-  id: string;
+export type TicketRequest = {
   owner: string;
   eventId: string;
+};
+
+export type Ticket = TicketRequest & {
+  id: string;
   soldOn: Date;
 };
+
+export type PersistedTicket = Omit<Ticket, 'date'> & {
+  date: string;
+};
+
+export type IndexedTickets = { [id: string]: Ticket };
+export type IndexedPersistedTickets = { [id: string]: PersistedTicket };

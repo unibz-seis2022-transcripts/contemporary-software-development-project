@@ -1,21 +1,51 @@
 import storage from 'node-persist';
-import { Ticket } from '../types.js';
+import {
+  IndexedPersistedTickets,
+  IndexedTickets,
+  Ticket,
+  TicketRequest,
+} from '../types.js';
+import { v4 as uuid } from 'uuid';
+import { initStorage, setItem } from './persist.js';
 
-const TICKET_STORAGE_NAME = 'tickets';
+const ticketsItemName = 'tickets';
 
-const tickets: { [id: string]: Ticket } = {};
+let tickets: IndexedTickets = {};
 
 export const initTickets = async (): Promise<void> => {
-  const hostStoragePath = './storage/tickets';
-  await storage.init({ dir: hostStoragePath, logging: true });
-  const persistedTickets = (await storage.getItem(TICKET_STORAGE_NAME)) || {};
+  tickets = {};
+  const persistedTickets = await initStorage<IndexedPersistedTickets>(
+    './storage/tickets',
+    ticketsItemName,
+  );
 
   Object.keys(persistedTickets).forEach((ticketKey) => {
     const ticket = persistedTickets[ticketKey];
     tickets[ticketKey] = { ...ticket, soldOn: new Date(ticket.date) };
   });
-
-  console.log(`Currently stored tickets: ${JSON.stringify(persistedTickets)}`);
 };
 
-export const sellTicket = (ticket: Ticket) => {};
+export const reserveTicket = (ticketRequest: TicketRequest) => {
+  const id = uuid();
+  const ticket: Ticket = {
+    ...ticketRequest,
+    id,
+    soldOn: new Date(),
+  };
+  tickets[id] = ticket;
+  setItem<IndexedTickets>(ticketsItemName, tickets);
+
+  return id;
+};
+
+export const deleteTicket = (ticketId: string): string => {
+  const ticket = tickets[ticketId];
+  const eventId = ticket.eventId;
+  delete tickets[ticketId];
+
+  return eventId;
+};
+
+export const getTickets = (): Ticket[] => {
+  return Object.values(tickets);
+};
