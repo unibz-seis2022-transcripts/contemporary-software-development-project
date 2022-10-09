@@ -3,6 +3,7 @@ import { addEventHandler } from './handlers/addEvent.js';
 import { deleteEventHandler } from './handlers/deleteEvent.js';
 import { deleteTicketHandler } from './handlers/deleteTicket.js';
 import { getEventsHandler } from './handlers/getEvents.js';
+import { getTicketsHandler } from './handlers/getTickets.js';
 import { reserveTicketHandler } from './handlers/reserveTicket.js';
 import { initEvents } from './model/event.js';
 import { initTickets } from './model/ticket.js';
@@ -21,8 +22,10 @@ const router = express.Router();
 router.post('/addEvent', addEventHandler);
 router.post('/deleteevent', deleteEventHandler);
 router.get('/events', getEventsHandler);
+
 router.post('/reserveticket', reserveTicketHandler);
 router.post('deleteTicket', deleteTicketHandler);
+router.get('tickets', getTicketsHandler);
 
 app.use(router);
 
