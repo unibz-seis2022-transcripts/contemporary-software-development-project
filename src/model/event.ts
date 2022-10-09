@@ -1,63 +1,97 @@
-import storage from 'node-persist';
-import { Event } from '../types.js';
+import {
+  Event,
+  EventRequest,
+  IndexedEvents,
+  IndexedPersistedEvents,
+} from '../types.js';
+import { v4 as uuid } from 'uuid';
+import { initStorage, setItem } from './persist.js';
 
-const EVENT_STORAGE_NAME = 'events';
+const eventsItemName = 'events';
 
-const events: { [id: string]: Event } = {};
+let events: IndexedEvents;
+
+export async function initEvents(): Promise<void> {
+  events = {};
+  const persistedEvents = await initStorage<IndexedPersistedEvents>(
+    './storage/events',
+    eventsItemName,
+  );
+
+  Object.keys(persistedEvents).forEach((eventKey) => {
+    const event = persistedEvents[eventKey];
+    events[eventKey] = { ...event, date: new Date(event.date) };
+  });
+}
 
 export class DuplicateEventError extends Error {
-  constructor(event?: Event) {
+  constructor(event?: EventRequest) {
     let errorMessage = 'Duplicate Event Error. ';
     if (event) {
-      errorMessage += `Event with name "${
-        event.name
-      }" already exists on day ${event.date.toDateString()}.`;
+      errorMessage += `Event with name "${event.name}" already exists on day ${event.date}.`;
     }
 
     super(errorMessage);
   }
 }
 
-export const initEvents = async (): Promise<void> => {
-  const hostStoragePath = './storage/events';
-  await storage.init({ dir: hostStoragePath, logging: true, encoding: 'utf8' });
-  const persistedEvents = (await storage.getItem(EVENT_STORAGE_NAME)) || {};
-
-  Object.keys(persistedEvents).forEach((eventKey) => {
-    events[eventKey] = {
-      ...persistedEvents[eventKey],
-      date: new Date(persistedEvents[eventKey].date),
-    };
-  });
-
-  console.log(`Currently stored events: ${JSON.stringify(events)}`);
-};
-
-const checkForDuplicateEvent = (newEvent: Event): void => {
-  const possibleDuplicate = Object.values(events).find(
+function checkForDuplicateEvent(eventToBeAdded: EventRequest): void {
+  const dateOfRequestedEvent = new Date(eventToBeAdded.date);
+  const possibleDuplicateEvent = Object.values(events).find(
     (event) =>
-      event.date.getTime() === newEvent.date.getTime() &&
-      event.name === newEvent.name,
+      event.date.getTime() === dateOfRequestedEvent.getTime() &&
+      event.name === eventToBeAdded.name,
   );
 
-  if (possibleDuplicate) {
-    throw new DuplicateEventError(newEvent);
+  if (possibleDuplicateEvent) {
+    throw new DuplicateEventError(eventToBeAdded);
   }
-};
+}
 
-export const addEvent = (newEvent: Event): void => {
-  checkForDuplicateEvent(newEvent);
+export function addEvent(eventToBeAdded: EventRequest): string {
+  checkForDuplicateEvent(eventToBeAdded);
 
-  events[newEvent.id] = newEvent;
-  storage.setItem(EVENT_STORAGE_NAME, events);
-  console.log(`Added ${JSON.stringify(newEvent)} to list of events`);
-};
+  const id = uuid();
 
-export const deleteEvent = (eventId: string): void => {
-  delete events[eventId];
-  storage.setItem(EVENT_STORAGE_NAME, events);
-};
+  const event: Event = {
+    ...eventToBeAdded,
+    id,
+    date: new Date(eventToBeAdded.date),
+    ticketsSold: 0,
+  };
+  events[id] = event;
+  setItem<IndexedEvents>(eventsItemName, events);
 
-export const getEvents = (): Event[] => {
+  return id;
+}
+
+export function getEvents(): Event[] {
   return Object.values(events);
-};
+}
+
+export function deleteEvent(id: string): void {
+  delete events[id];
+  setItem<IndexedEvents>(eventsItemName, events);
+}
+
+export class EventSoldOutError extends Error {
+  constructor(event?: Event) {
+    let errorMessage = 'Event sold out. ';
+    if (event) {
+      errorMessage += `Event with name "${event.name}" and id ${event.id} has no more tickets available.`;
+    }
+
+    super(errorMessage);
+  }
+}
+
+export function reserveTicket(id: string): void {
+  const event = events[id];
+
+  if (event.ticketsSold + 1 > event.ticketsTotal) {
+    throw new EventSoldOutError(event);
+  }
+
+  event.ticketsSold++;
+  setItem<IndexedEvents>(eventsItemName, events);
+}

@@ -1,3 +1,9 @@
+export type EventRequest = {
+  name: string;
+  date: string;
+  ticketsTotal: number;
+};
+
 export type Event = {
   id: string;
   name: string;
@@ -5,6 +11,13 @@ export type Event = {
   ticketsTotal: number;
   ticketsSold: number;
 };
+
+export type PersistedEvent = Omit<Event, 'date'> & {
+  date: string;
+};
+
+export type IndexedEvents = { [id: string]: Event };
+export type IndexedPersistedEvents = { [id: string]: PersistedEvent };
 
 export type Ticket = {
   id: string;
