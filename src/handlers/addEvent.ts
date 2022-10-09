@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { addEvent, DuplicateEventError, Event } from '../model/event.js';
+import { addEvent, DuplicateEventError } from '../model/event.js';
+import { Event } from '../types.js';
 
 export const addEventHandler: RequestHandler = (req, res) => {
   const name = req.query['name'] as string;

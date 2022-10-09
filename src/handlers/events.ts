@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
-import { Event, getEvents } from '../model/event.js';
+import { getEvents } from '../model/event.js';
+import { Event } from '../types.js';
 
 type EventResponse = Event & {
   ticketsRemaining: number;

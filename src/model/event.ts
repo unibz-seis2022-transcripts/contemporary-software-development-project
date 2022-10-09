@@ -1,12 +1,5 @@
 import storage from 'node-persist';
-
-export type Event = {
-  id: string;
-  name: string;
-  date: Date;
-  ticketsTotal: number;
-  ticketsSold: number;
-};
+import { Event } from '../types.js';
 
 const EVENT_STORAGE_NAME = 'events';
 

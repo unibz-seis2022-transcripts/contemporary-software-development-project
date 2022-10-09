@@ -1,11 +1,5 @@
 import storage from 'node-persist';
-
-export type Ticket = {
-  id: string;
-  owner: string;
-  eventId: string;
-  soldOn: Date;
-};
+import { Ticket } from '../types.js';
 
 const TICKET_STORAGE_NAME = 'tickets';
 
