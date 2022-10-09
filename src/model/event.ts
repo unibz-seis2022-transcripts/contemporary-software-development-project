@@ -95,3 +95,14 @@ export function reserveTicket(id: string): void {
   event.ticketsSold++;
   setItem<IndexedEvents>(eventsItemName, events);
 }
+
+export function searchTickets(desiredTickets: number, date: Date): Event[] {
+  const foundEvents = Object.values(events).filter((event) => {
+    const availableTickets = event.ticketsTotal - event.ticketsSold;
+    const isSameDay = event.date.getTime() === date.getTime();
+    const areEnoughTicketsAvailable = availableTickets >= desiredTickets;
+    return isSameDay && areEnoughTicketsAvailable;
+  });
+
+  return foundEvents;
+}

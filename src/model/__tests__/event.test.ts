@@ -10,6 +10,7 @@ import {
   initEvents,
   deleteEvent,
   reserveTicket,
+  searchTickets,
 } from '../event.js';
 import { v4 as uuid } from 'uuid';
 import { initStorage, setItem } from '../persist.js';
@@ -154,5 +155,57 @@ describe('event model', () => {
     await loadEvents([degreeCeremonyWithNoMoreTickets]);
 
     expect(() => reserveTicket(degreeCeremonyId)).toThrowError();
+  });
+
+  test('searchTickets returns events on the requested day with at least the requested tickets left', async () => {
+    const event1Persist: Partial<PersistedEvent> = {
+      id: '1',
+      date: '2022-10-08',
+      ticketsTotal: 10,
+      ticketsSold: 9,
+    };
+    const event2Persist: Partial<PersistedEvent> = {
+      id: '2',
+      date: '2022-10-08',
+      ticketsTotal: 10,
+      ticketsSold: 8,
+    };
+    const event2: Partial<Event> = {
+      ...event2Persist,
+      date: new Date(event2Persist.date),
+    };
+    const event3Persist: Partial<PersistedEvent> = {
+      id: '3',
+      date: '2022-10-08',
+      ticketsTotal: 10,
+      ticketsSold: 7,
+    };
+    const event3: Partial<Event> = {
+      ...event3Persist,
+      date: new Date(event3Persist.date),
+    };
+    const eventOnAnotherDayPersist: Partial<PersistedEvent> = {
+      id: '4',
+      date: '2022-10-09',
+      ticketsTotal: 10,
+      ticketsSold: 0,
+    };
+
+    await loadEvents([
+      event1Persist,
+      event2Persist,
+      event3Persist,
+      eventOnAnotherDayPersist,
+    ] as PersistedEvent[]);
+
+    const actualEvents = searchTickets(2, new Date('2022-10-08'));
+
+    expect(actualEvents).toHaveLength(2);
+    expect(actualEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(event2),
+        expect.objectContaining(event3),
+      ]),
+    );
   });
 });
