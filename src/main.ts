@@ -2,7 +2,7 @@ import express from 'express';
 import { addEventHandler } from './handlers/addEvent.js';
 import { deleteEventHandler } from './handlers/deleteEvent.js';
 import { deleteTicketHandler } from './handlers/deleteTicket.js';
-import { getEventsHandler } from './handlers/events.js';
+import { getEventsHandler } from './handlers/getEvents.js';
 import { reserveTicketHandler } from './handlers/reserveTicket.js';
 import { initEvents } from './model/event.js';
 import { initTickets } from './model/ticket.js';
