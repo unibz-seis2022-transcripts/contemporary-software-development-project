@@ -1,10 +1,10 @@
 import storage from 'node-persist';
 
-export const initStorage = async <T>(
-  storagePath: string,
-  itemName: string,
-): Promise<T> => {
+export const initStorage = async (storagePath: string): Promise<void> => {
   await storage.init({ dir: storagePath, logging: true });
+};
+
+export const getItem = async <T>(itemName: string): Promise<T> => {
   const persistedItem: T = await storage.getItem(itemName);
   return persistedItem;
 };
