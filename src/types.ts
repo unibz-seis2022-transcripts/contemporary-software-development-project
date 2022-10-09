@@ -29,8 +29,8 @@ export type Ticket = TicketRequest & {
   soldOn: Date;
 };
 
-export type PersistedTicket = Omit<Ticket, 'date'> & {
-  date: string;
+export type PersistedTicket = Omit<Ticket, 'soldOn'> & {
+  soldOn: string;
 };
 
 export type IndexedTickets = { [id: string]: Ticket };

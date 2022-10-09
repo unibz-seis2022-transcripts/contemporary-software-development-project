@@ -18,7 +18,10 @@ export const initTickets = async (): Promise<void> => {
 
   Object.keys(persistedTickets).forEach((ticketKey) => {
     const ticket = persistedTickets[ticketKey];
-    tickets[ticketKey] = { ...ticket, soldOn: new Date(ticket.date) };
+    tickets[ticketKey] = {
+      ...ticket,
+      soldOn: new Date(ticket.soldOn),
+    };
   });
 };
 
