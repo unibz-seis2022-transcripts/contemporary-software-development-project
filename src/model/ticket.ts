@@ -37,6 +37,11 @@ export const reserveTicket = (ticketRequest: TicketRequest): string => {
 
 export const deleteTicket = (ticketId: string): string => {
   const ticket = tickets[ticketId];
+
+  if (!ticket) {
+    return '';
+  }
+
   const eventId = ticket.eventId;
   delete tickets[ticketId];
   setItem<IndexedTickets>(ticketsItemName, tickets);
