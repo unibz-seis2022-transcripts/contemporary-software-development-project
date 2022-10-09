@@ -85,7 +85,7 @@ export class EventSoldOutError extends Error {
   }
 }
 
-export function reserveTicket(id: string): void {
+export function reserveTicketForEvent(id: string): void {
   const event = events[id];
 
   if (event.ticketsSold + 1 > event.ticketsTotal) {
@@ -105,4 +105,11 @@ export function searchTickets(desiredTickets: number, date: Date): Event[] {
   });
 
   return foundEvents;
+}
+
+export function deleteTicketForEvent(eventId: string): void {
+  const event = events[eventId];
+  if (event.ticketsSold > 0) {
+    event.ticketsSold--;
+  }
 }

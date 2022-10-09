@@ -9,8 +9,9 @@ import {
   getEvents,
   initEvents,
   deleteEvent,
-  reserveTicket,
+  reserveTicketForEvent,
   searchTickets,
+  deleteTicketForEvent,
 } from '../event.js';
 import { v4 as uuid } from 'uuid';
 import { initStorage, setItem } from '../persist.js';
@@ -64,7 +65,7 @@ describe('event model', () => {
     ticketsSold: 0,
   };
 
-  const degreeCeremonyPersisted = {
+  const degreeCeremonyPersisted: PersistedEvent = {
     ...degreeCeremony,
     date: degreeCeremonyRequest.date,
   };
@@ -133,7 +134,7 @@ describe('event model', () => {
       ticketsSold: 1,
     };
 
-    reserveTicket(degreeCeremonyId);
+    reserveTicketForEvent(degreeCeremonyId);
 
     const actualEvents = getEvents();
     expect(actualEvents).toEqual(
@@ -154,7 +155,7 @@ describe('event model', () => {
     };
     await loadEvents([degreeCeremonyWithNoMoreTickets]);
 
-    expect(() => reserveTicket(degreeCeremonyId)).toThrowError();
+    expect(() => reserveTicketForEvent(degreeCeremonyId)).toThrowError();
   });
 
   test('searchTickets returns events on the requested day with at least the requested tickets left', async () => {
@@ -207,5 +208,28 @@ describe('event model', () => {
         expect.objectContaining(event3),
       ]),
     );
+  });
+
+  test('deleteTicketForEvent decreases ticketsSold by 1', async () => {
+    const degreeCeremonyWithNoTickets: Partial<PersistedEvent> = {
+      ...degreeCeremonyPersisted,
+      ticketsSold: 1000,
+    };
+
+    await loadEvents([degreeCeremonyWithNoTickets as PersistedEvent]);
+
+    deleteTicketForEvent(degreeCeremonyWithNoTickets.id);
+
+    const actualEvents = getEvents();
+    expect(actualEvents).toHaveLength(1);
+    expect(actualEvents[0].ticketsSold).toBe(999);
+  });
+
+  test('deleteTicketForEvent does not change event if there are no sold tickets', async () => {
+    deleteTicketForEvent(degreeCeremonyId);
+
+    const actualEvents = getEvents();
+    expect(actualEvents).toHaveLength(1);
+    expect(actualEvents[0].ticketsSold).toBe(0);
   });
 });
