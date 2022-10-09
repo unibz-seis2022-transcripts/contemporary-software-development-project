@@ -7,6 +7,7 @@ export const reserveTicketHandler: RequestHandler = (req, res) => {
   const owner = req.query['name'] as string;
 
   try {
+    reserveTicketForEvent(eventId);
   } catch (error) {
     if (error instanceof EventSoldOutError) {
       return res.status(400).send(error.message);
