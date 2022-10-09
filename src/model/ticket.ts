@@ -1,4 +1,3 @@
-import storage from 'node-persist';
 import {
   IndexedPersistedTickets,
   IndexedTickets,
@@ -25,7 +24,7 @@ export const initTickets = async (): Promise<void> => {
   });
 };
 
-export const reserveTicket = (ticketRequest: TicketRequest) => {
+export const reserveTicket = (ticketRequest: TicketRequest): string => {
   const id = uuid();
   const ticket: Ticket = {
     ...ticketRequest,

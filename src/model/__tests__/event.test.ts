@@ -19,7 +19,7 @@ import { initStorage, setItem } from '../persist.js';
 jest.mock('uuid');
 jest.mock('../persist.js');
 
-const loadEvents = async (events: PersistedEvent[]) => {
+const loadEvents = async (events: PersistedEvent[]): Promise<void> => {
   const indexedEvents: IndexedPersistedEvents = {};
   events.forEach((event) => {
     indexedEvents[event.id] = event;
@@ -106,7 +106,7 @@ describe('event model', () => {
       ticketsTotal: 42,
     };
 
-    expect(() => addEvent(duplicateEventRequest)).toThrowError();
+    expect(() => addEvent(duplicateEventRequest)).toThrow();
   });
 
   test('deleteEvent removes an event from storage', async () => {
@@ -155,7 +155,7 @@ describe('event model', () => {
     };
     await loadEvents([degreeCeremonyWithNoMoreTickets]);
 
-    expect(() => reserveTicketForEvent(degreeCeremonyId)).toThrowError();
+    expect(() => reserveTicketForEvent(degreeCeremonyId)).toThrow();
   });
 
   test('searchTickets returns events on the requested day with at least the requested tickets left', async () => {
