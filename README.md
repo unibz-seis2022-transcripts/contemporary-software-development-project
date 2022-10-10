@@ -6,3 +6,7 @@
 2. Install dependencies by running `npm install`.
 3. Transpile the software to executable javascript by running `npm run build`.
 4. Launch development server by running `npm run start`.
+
+## Testing
+
+Jest is used for unit tests. The test suites can be run by executing `npm run test`.
