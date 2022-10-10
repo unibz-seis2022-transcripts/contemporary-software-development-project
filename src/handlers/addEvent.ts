@@ -3,14 +3,10 @@ import { addEvent, DuplicateEventError } from '../model/event.js';
 import { EventRequest } from '../types.js';
 
 export const addEventHandler: RequestHandler = (req, res) => {
-  const name = req.query['name'] as string;
-  const date = req.query['date'] as string;
-  const tickets = +req.query['tickets'];
-
   const eventRequest: EventRequest = {
-    name,
-    date,
-    ticketsTotal: tickets,
+    name: req.query['name'] as string,
+    date: req.query['date'] as string,
+    ticketsTotal: +req.query['tickets'],
   };
 
   let id: string;
@@ -19,12 +15,16 @@ export const addEventHandler: RequestHandler = (req, res) => {
     id = addEvent(eventRequest);
   } catch (error) {
     if (error instanceof DuplicateEventError) {
-      return res.status(400).send(error.message);
+      res.status(400);
+      res.send('Duplicate Event Error.');
+      return;
     } else {
-      console.log('An unexpected error occured: ', error);
-      return res.status(500).send('An unexpected error occured.');
+      res.status(500);
+      res.send('An unknown error occured.');
+      return;
     }
   }
 
-  return res.status(201).send({ eventId: id });
+  res.status(201).send({ eventId: id });
+  return;
 };

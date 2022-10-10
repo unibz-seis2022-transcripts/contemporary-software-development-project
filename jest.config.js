@@ -16,4 +16,10 @@ export default {
     '!src/**/*.d.ts',
     '!src/**/*.d.mts',
   ],
+  setupFiles: ['<rootDir>testConfig.ts'],
+  globals: {
+    "ts-jest": {
+      compiler: "ttypescript"
+    }
+  }
 };
