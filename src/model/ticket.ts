@@ -52,6 +52,13 @@ export const deleteTicket = (ticketId: string): string => {
   return eventId;
 };
 
+export const deleteTicketsForEvent = (eventId: string): void => {
+  const affectedTicketIds = Object.values(tickets)
+    .filter((ticket) => ticket.eventId === eventId)
+    .map((ticket) => ticket.id);
+  affectedTicketIds.forEach((ticketId) => deleteTicket(ticketId));
+};
+
 export const getTickets = (): Ticket[] => {
   return Object.values(tickets);
 };
