@@ -105,7 +105,7 @@ export function searchTickets(desiredTickets: number, date: Date): Event[] {
   return foundEvents;
 }
 
-export function deleteTicketForEvent(eventId: string): void {
+export function cancelTicketReservationForEvent(eventId: string): void {
   const event = events[eventId];
   if (event.ticketsSold > 0) {
     event.ticketsSold--;

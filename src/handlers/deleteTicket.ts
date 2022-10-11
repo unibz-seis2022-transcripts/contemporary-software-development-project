@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { deleteTicketForEvent } from '../model/event.js';
+import { cancelTicketReservationForEvent } from '../model/event.js';
 import { deleteTicket } from '../model/ticket.js';
 
 export const deleteTicketHandler: RequestHandler = (req, res) => {
@@ -7,7 +7,7 @@ export const deleteTicketHandler: RequestHandler = (req, res) => {
   const eventId = deleteTicket(ticketId);
 
   if (eventId) {
-    deleteTicketForEvent(eventId);
+    cancelTicketReservationForEvent(eventId);
   }
 
   return res.status(200).send();

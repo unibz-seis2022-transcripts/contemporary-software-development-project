@@ -11,7 +11,7 @@ import {
   deleteEvent,
   reserveTicketForEvent,
   searchTickets,
-  deleteTicketForEvent,
+  cancelTicketReservationForEvent,
 } from '../event.js';
 import { v4 as uuid } from 'uuid';
 import { getItem, setItem } from '../persist.js';
@@ -210,7 +210,7 @@ describe('event model', () => {
     );
   });
 
-  test('deleteTicketForEvent decreases ticketsSold by 1', async () => {
+  test('cancelTicketReservationForEvent decreases ticketsSold by 1', async () => {
     const degreeCeremonyWithNoTickets: Partial<PersistedEvent> = {
       ...degreeCeremonyPersisted,
       ticketsSold: 1000,
@@ -218,15 +218,15 @@ describe('event model', () => {
 
     await loadEvents([degreeCeremonyWithNoTickets as PersistedEvent]);
 
-    deleteTicketForEvent(degreeCeremonyWithNoTickets.id);
+    cancelTicketReservationForEvent(degreeCeremonyWithNoTickets.id);
 
     const actualEvents = getEvents();
     expect(actualEvents).toHaveLength(1);
     expect(actualEvents[0].ticketsSold).toBe(999);
   });
 
-  test('deleteTicketForEvent does not change event if there are no sold tickets', async () => {
-    deleteTicketForEvent(degreeCeremonyId);
+  test('cancelTicketReservationForEvent does not change event if there are no sold tickets', async () => {
+    cancelTicketReservationForEvent(degreeCeremonyId);
 
     const actualEvents = getEvents();
     expect(actualEvents).toHaveLength(1);
