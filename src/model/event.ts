@@ -74,9 +74,9 @@ export function deleteEvent(id: string): void {
 
 export class EventSoldOutError extends Error {
   constructor(event?: Event) {
-    let errorMessage = 'Event sold out. ';
+    let errorMessage = 'Event sold out.';
     if (event) {
-      errorMessage += `Event with name "${event.name}" and id ${event.id} has no more tickets available.`;
+      errorMessage += ` Event with name "${event.name}" and id ${event.id} has no more tickets available.`;
     }
 
     super(errorMessage);
