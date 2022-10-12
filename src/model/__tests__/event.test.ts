@@ -19,7 +19,7 @@ import { getItem, setItem } from '../persist.js';
 jest.mock('uuid');
 jest.mock('../persist.js');
 
-const loadEvents = async (events: PersistedEvent[]): Promise<void> => {
+const loadEventsForTest = async (events: PersistedEvent[]): Promise<void> => {
   const indexedEvents: IndexedPersistedEvents = {};
   events.forEach((event) => {
     indexedEvents[event.id] = event;
@@ -33,7 +33,7 @@ describe('event model', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    await loadEvents([degreeCeremonyPersisted]);
+    await loadEventsForTest([degreeCeremonyPersisted]);
   });
 
   test('persisted events are loaded from a file', async () => {
@@ -42,7 +42,7 @@ describe('event model', () => {
       name: 'this is a test event',
     };
 
-    await loadEvents([testEvent as PersistedEvent]);
+    await loadEventsForTest([testEvent as PersistedEvent]);
     const actualEvents = getEvents();
 
     expect(actualEvents).toEqual(
@@ -78,7 +78,7 @@ describe('event model', () => {
   });
 
   test('addEvent stores the event and returns its id', async () => {
-    await loadEvents([]);
+    await loadEventsForTest([]);
 
     const eventToBeAdded: EventRequest = {
       name: 'Degree ceremony',
@@ -116,7 +116,10 @@ describe('event model', () => {
       name: 'Another event',
     };
 
-    await loadEvents([degreeCeremonyPersisted, anotherEvent as PersistedEvent]);
+    await loadEventsForTest([
+      degreeCeremonyPersisted,
+      anotherEvent as PersistedEvent,
+    ]);
 
     deleteEvent(anotherEventId);
     const actualEvents = getEvents();
@@ -153,7 +156,7 @@ describe('event model', () => {
       ...degreeCeremonyPersisted,
       ticketsSold: 1000,
     };
-    await loadEvents([degreeCeremonyWithNoMoreTickets]);
+    await loadEventsForTest([degreeCeremonyWithNoMoreTickets]);
 
     expect(() => reserveTicketForEvent(degreeCeremonyId)).toThrow();
   });
@@ -192,7 +195,7 @@ describe('event model', () => {
       ticketsSold: 0,
     };
 
-    await loadEvents([
+    await loadEventsForTest([
       event1Persist,
       event2Persist,
       event3Persist,
@@ -216,7 +219,7 @@ describe('event model', () => {
       ticketsSold: 1000,
     };
 
-    await loadEvents([degreeCeremonyWithNoTickets as PersistedEvent]);
+    await loadEventsForTest([degreeCeremonyWithNoTickets as PersistedEvent]);
 
     cancelTicketReservationForEvent(degreeCeremonyWithNoTickets.id);
 
