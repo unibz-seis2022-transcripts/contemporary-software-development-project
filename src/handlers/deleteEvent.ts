@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { deleteEvent } from '../model/event.js';
-import { deleteTicketsForEvent, getTickets } from '../model/ticket.js';
+import { deleteTicketsForEvent } from '../model/ticket.js';
 
 export const deleteEventHandler: RequestHandler = (req, res) => {
   const id = req.query['id'] as string;
