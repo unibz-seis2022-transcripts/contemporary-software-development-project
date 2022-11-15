@@ -1,0 +1,7 @@
+services:
+  tickent:
+    image: tickent
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./storage:/app/storage
