@@ -19,6 +19,10 @@ docker build -f ../step2/Dockerfile . -t <target tag>
 docker run -p <target localhost port>:3000
 ```
 
+## Execute docker image
+
+For this, please refer to the README file stored in `../step2`.
+
 ## Testing
 
 Jest is used for unit tests. The test suites can be run by executing `npm run test`.
