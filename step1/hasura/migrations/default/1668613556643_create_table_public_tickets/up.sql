@@ -1,0 +1,1 @@
+CREATE TABLE "public"."tickets" ("id" text NOT NULL, "owner" text NOT NULL, "soldOn" timestamptz NOT NULL, "eventId" text NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("eventId") REFERENCES "public"."events"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("id"));

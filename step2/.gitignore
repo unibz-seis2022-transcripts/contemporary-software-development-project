@@ -1,2 +1,5 @@
 # Storage
 storage/*
+
+# Secrets
+secrets/*.txt

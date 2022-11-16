@@ -12,7 +12,7 @@ docker run -p <target port>:3000 -v `pwd`/storage:/app/storage -d <image tag>
 
 ## Launch Docker container with `docker compose`
 
-Execute the following to launch the container via docker compose in detached mode (put in another name for the `image` if necessary):
+Execute the following to launch the container via docker compose in detached mode (put in another name for the `image` of the tickent service if necessary):
 
 ```bash
 docker-compose up -d

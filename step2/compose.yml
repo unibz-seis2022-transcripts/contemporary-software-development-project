@@ -5,3 +5,34 @@ services:
       - "3000:3000"
     volumes:
       - ./storage:/app/storage
+  postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+      - ./storage/db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_pass
+    secrets:
+      - postgres_pass
+  graphql-engine:
+    image: hasura/graphql-engine:v2.15.1
+    command: sh -c 'graphql-engine --database-url "postgres://postgres:$$(cat /run/secrets/postgres_pass)@postgres:5432/postgres" serve --admin-secret "$$(cat /run/secrets/admin_secret)" --metadata-database-url "postgres://postgres:$$(cat /run/secrets/postgres_pass)@postgres:5432/postgres"'
+    secrets:
+      - postgres_pass
+      - admin_secret
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
+secrets:
+  postgres_pass:
+    file: ./secrets/postgres_pass.txt
+  admin_secret:
+    file: ./secrets/admin_secret.txt
