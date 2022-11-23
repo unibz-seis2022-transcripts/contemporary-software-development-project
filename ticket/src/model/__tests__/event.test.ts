@@ -1,22 +1,14 @@
-import {
-  Event,
-  EventRequest,
-  IndexedPersistedEvents,
-  PersistedEvent,
-} from '../../types.js';
+import { Event, IndexedPersistedEvents, PersistedEvent } from '../../types.js';
 import {
   addEvent,
-  getEvents,
   initEvents,
   deleteEvent,
   reserveTicketForEvent,
   searchTickets,
   cancelTicketReservationForEvent,
 } from '../event.js';
-import { v4 as uuid } from 'uuid';
 import { getItem, setItem } from '../persist.js';
 
-jest.mock('uuid');
 jest.mock('../persist.js');
 
 const loadEventsForTest = async (events: PersistedEvent[]): Promise<void> => {
@@ -36,77 +28,28 @@ describe('event model', () => {
     await loadEventsForTest([degreeCeremonyPersisted]);
   });
 
-  test('persisted events are loaded from a file', async () => {
-    const testEvent: Partial<PersistedEvent> = {
-      id: '1',
-      name: 'this is a test event',
-    };
-
-    await loadEventsForTest([testEvent as PersistedEvent]);
-    const actualEvents = getEvents();
-
-    expect(actualEvents).toEqual(
-      expect.arrayContaining([expect.objectContaining(testEvent)]),
-    );
-  });
-
-  const degreeCeremonyRequest: EventRequest = {
-    name: 'Degree ceremony',
-    date: '2022-10-08',
-    ticketsTotal: 1000,
-  };
-
   const degreeCeremonyId = '1234';
 
   const degreeCeremony: Event = {
-    ...degreeCeremonyRequest,
+    name: 'Degree ceremony',
+    ticketsTotal: 1000,
     id: degreeCeremonyId,
-    date: new Date(degreeCeremonyRequest.date),
+    date: new Date('2022-10-08'),
     ticketsSold: 0,
   };
 
   const degreeCeremonyPersisted: PersistedEvent = {
     ...degreeCeremony,
-    date: degreeCeremonyRequest.date,
+    date: '2022-10-08',
   };
-
-  test('stored events can be retrieved', () => {
-    const actualEvents = getEvents();
-    expect(actualEvents).toEqual(
-      expect.arrayContaining([expect.objectContaining(degreeCeremony)]),
-    );
-  });
 
   test('addEvent stores the event and returns its id', async () => {
     await loadEventsForTest([]);
 
-    const eventToBeAdded: EventRequest = {
-      name: 'Degree ceremony',
-      date: '2022-10-08',
-      ticketsTotal: 1000,
-    };
-
-    jest.mocked(uuid).mockReturnValue(degreeCeremonyId);
-
-    const actualEventId = addEvent(eventToBeAdded);
-    const actualEvents = getEvents();
+    const actualEventId = addEvent(degreeCeremony);
 
     expect(actualEventId).toEqual(degreeCeremonyId);
-    expect(actualEvents).toHaveLength(1);
-    expect(actualEvents).toEqual(
-      expect.arrayContaining([expect.objectContaining(degreeCeremony)]),
-    );
     expect(setItem).toHaveBeenCalledWith('events', { '1234': degreeCeremony });
-  });
-
-  test('trying to call addEvent with a duplicate event with same name and date throws an error', () => {
-    const duplicateEventRequest: EventRequest = {
-      name: 'Degree ceremony',
-      date: '2022-10-08',
-      ticketsTotal: 42,
-    };
-
-    expect(() => addEvent(duplicateEventRequest)).toThrow();
   });
 
   test('deleteEvent removes an event from storage', async () => {
@@ -122,33 +65,8 @@ describe('event model', () => {
     ]);
 
     deleteEvent(anotherEventId);
-    const actualEvents = getEvents();
 
-    expect(actualEvents).toHaveLength(1);
-    expect(actualEvents).toEqual(
-      expect.arrayContaining([expect.objectContaining(degreeCeremony)]),
-    );
     expect(setItem).toHaveBeenCalledWith('events', { '1234': degreeCeremony });
-  });
-
-  test('calling reserveTicket increases the sold tickets by 1', () => {
-    const degreeCeremonyWithSoldTicket: Event = {
-      ...degreeCeremony,
-      ticketsSold: 1,
-    };
-
-    reserveTicketForEvent(degreeCeremonyId);
-
-    const actualEvents = getEvents();
-    expect(actualEvents).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(degreeCeremonyWithSoldTicket),
-      ]),
-    );
-
-    expect(setItem).toHaveBeenCalledWith('events', {
-      '1234': degreeCeremonyWithSoldTicket,
-    });
   });
 
   test('calling reserveTicket with no more tickets available throws an error', async () => {
@@ -223,16 +141,20 @@ describe('event model', () => {
 
     cancelTicketReservationForEvent(degreeCeremonyWithNoTickets.id);
 
-    const actualEvents = getEvents();
-    expect(actualEvents).toHaveLength(1);
-    expect(actualEvents[0].ticketsSold).toBe(999);
+    expect(setItem).toHaveBeenCalledWith('events', {
+      '1234': {
+        ...degreeCeremonyWithNoTickets,
+        date: new Date(degreeCeremonyWithNoTickets.date),
+        ticketsSold: 999,
+      },
+    });
   });
 
   test('cancelTicketReservationForEvent does not change event if there are no sold tickets', async () => {
     cancelTicketReservationForEvent(degreeCeremonyId);
 
-    const actualEvents = getEvents();
-    expect(actualEvents).toHaveLength(1);
-    expect(actualEvents[0].ticketsSold).toBe(0);
+    expect(setItem).toHaveBeenCalledWith('events', {
+      '1234': { ...degreeCeremony, ticketsSold: 0 },
+    });
   });
 });

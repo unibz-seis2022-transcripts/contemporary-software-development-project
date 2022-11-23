@@ -52,6 +52,7 @@ export const deleteTicket = (ticketId: string): string => {
   return eventId;
 };
 
+// TODO (2022-11-23): make sure to delete tickets when event is deleted
 export const deleteTicketsForEvent = (eventId: string): void => {
   const affectedTicketIds = Object.values(tickets)
     .filter((ticket) => ticket.eventId === eventId)

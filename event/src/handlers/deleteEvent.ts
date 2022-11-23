@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { deleteEvent } from '../model/event.js';
-import { deleteTicketsForEvent } from '../model/ticket.js';
 
 export const deleteEventHandler: RequestHandler = (req, res) => {
   const id = req.query['id'] as string;
   deleteEvent(id);
-  deleteTicketsForEvent(id);
+  // TODO (2022-11-23): Delete tickets for this event
 
   res.status(200);
   res.send();
