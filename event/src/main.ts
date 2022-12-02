@@ -4,12 +4,17 @@ import { deleteEventHandler } from './handlers/deleteEvent.js';
 import { getEventsHandler } from './handlers/getEvents.js';
 import { initEvents } from './model/event.js';
 import { initStorage } from './model/persist.js';
+import Consul from 'consul';
 
 await initStorage('./storage');
 await initEvents();
 
 const app = express();
 const port = 3001;
+const serviceName = 'event';
+
+const consul = new Consul({ host: 'consul', port: '8500' });
+await consul.agent.service.register(serviceName);
 
 app.get('/', (req, res) => {
   res.send('Hello world!');

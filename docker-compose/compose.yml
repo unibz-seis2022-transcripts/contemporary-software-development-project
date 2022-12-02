@@ -1,7 +1,25 @@
 services:
-  tickent:
-    image: tickent
+  consul:
+    image: consul:latest
     ports:
-      - "3000:3000"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"
+      - "8600:8600/udp"
+    command: "agent -server -bootstrap-expect=1 -ui -client 0.0.0.0"
+  event:
+    image: teilkasko/tickent-event
+    ports:
+      - "3001:3001"
     volumes:
       - ./storage:/app/storage
+    depends_on:
+      - "consul"
+  ticket:
+    image: teilkasko/tickent-ticket
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - "consul"
