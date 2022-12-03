@@ -7,6 +7,12 @@ services:
       - "8600:8600"
       - "8600:8600/udp"
     command: "agent -server -bootstrap-expect=1 -ui -client 0.0.0.0"
+  message-queue:
+    image: rabbitmq:latest
+    volumes:
+      - ./rabbitmq:/etc/rabbitmq
+    depends_on:
+      - "consul"
   event:
     image: teilkasko/tickent-event
     ports:
