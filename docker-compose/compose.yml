@@ -12,7 +12,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./storage:/app/storage
+      - ./storage/event:/app/storage
     depends_on:
       - "consul"
   ticket:
@@ -20,6 +20,6 @@ services:
     ports:
       - "3002:3002"
     volumes:
-      - ./storage:/app/storage
+      - ./storage/ticket:/app/storage
     depends_on:
       - "consul"
