@@ -1,4 +1,8 @@
-# Step 1 of the Contemporary software development project
+# Ticket service for the "Contemporary Software Development" project
+
+## Testing
+
+Jest is used for unit tests. The test suites can be run by executing `npm run test`.
 
 ## Running the local build
 
@@ -10,19 +14,21 @@
 ## Build docker image
 
 1. Create a current build by running `npm run build`.
-2. Inside this folder (`step1`) execute the following command to build the docker image (replace `<target tag>` with the desired value): 
+2. Inside this folder (`ticket`) execute the following command to build the docker image (replace `<image tag>` with the desired value): 
 ```bash
-docker build -f ../step2/Dockerfile . -t <target tag>
+docker build . -t <image tag>
 ```
-3. Start the image by executing the following line (replace `<target localhost port>` with the desired port on your machine):
+3. Start the image by executing the following line (replace `<target localhost port>` with the desired port on your machine and `<image tag>` with the previously chosen image tag):
 ```bash
-docker run -p <target localhost port>:3000
+docker run -p <target localhost port>:3002 <image tag>
 ```
 
 ## Execute docker image
 
-For this, please refer to the README file stored in `../step2`.
+Execute the following to run the container in detached mode (replace `<target port>` with the desired port on your localhost machine and `<image tag>` with the tag of the image that was used when building andtagging the image):
 
-## Testing
+**Important:** Please make sure that the desired storage directory on your local machine does not contain subdirectories.
 
-Jest is used for unit tests. The test suites can be run by executing `npm run test`.
+```bash
+docker run -p <target port>:3002 -v `pwd`/storage/ticket:/app/storage -d <image tag>
+```
