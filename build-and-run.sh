@@ -20,13 +20,16 @@ sudo docker-compose up -d
 
 event_container_line=$(sudo docker container ls | grep event)
 event_id=${event_container_line:0:12}
+echo "Event container id: ${event_id}"
 
 ticket_container_line=$(sudo docker container ls | grep ticket)
 ticket_id=${ticket_container_line:0:12}
+echo "Ticket container id: ${ticket_id}"
 
 rabbitmq_container_line=$(sudo docker container ls | grep rabbitmq)
 rabbitmq_id=${rabbitmq_container_line:0:12}
-
-echo "Event container id: ${event_id}"
-echo "Ticket container id: ${ticket_id}"
 echo "rabbitmq container id: ${rabbitmq_id}"
+
+nginx_container_line=$(sudo docker container ls | grep nginx)
+nginx_id=${nginx_container_line:0:12}
+echo "nginx container id: ${nginx_id}"
