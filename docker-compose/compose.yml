@@ -17,8 +17,6 @@ services:
       - "consul"
   event:
     image: teilkasko/tickent-event
-    ports:
-      - "3001:3001"
     volumes:
       - ./storage/event:/app/storage
     depends_on:
@@ -26,10 +24,17 @@ services:
       - "message-queue"
   ticket:
     image: teilkasko/tickent-ticket
-    ports:
-      - "3002:3002"
     volumes:
       - ./storage/ticket:/app/storage
     depends_on:
       - "consul"
       - "message-queue"
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/api_gateway.conf:/etc/nginx/api_gateway.conf
+      - ./nginx/api_json_errors.conf:/etc/nginx/api_json_errors.conf
+      - ./nginx/api_conf.d:/etc/nginx/api_conf.d
+    ports:
+      - "8080:80"
