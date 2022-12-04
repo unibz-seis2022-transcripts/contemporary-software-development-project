@@ -9,6 +9,8 @@ services:
     command: "agent -server -bootstrap-expect=1 -ui -client 0.0.0.0"
   message-queue:
     image: rabbitmq:latest
+    ports:
+      - "15672:15672"
     volumes:
       - ./rabbitmq:/etc/rabbitmq
     depends_on:
@@ -21,6 +23,7 @@ services:
       - ./storage/event:/app/storage
     depends_on:
       - "consul"
+      - "message-queue"
   ticket:
     image: teilkasko/tickent-ticket
     ports:
@@ -29,3 +32,4 @@ services:
       - ./storage/ticket:/app/storage
     depends_on:
       - "consul"
+      - "message-queue"

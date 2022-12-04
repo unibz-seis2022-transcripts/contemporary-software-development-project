@@ -24,5 +24,9 @@ event_id=${event_container_line:0:12}
 ticket_container_line=$(sudo docker container ls | grep ticket)
 ticket_id=${ticket_container_line:0:12}
 
+rabbitmq_container_line=$(sudo docker container ls | grep rabbitmq)
+rabbitmq_id=${rabbitmq_container_line:0:12}
+
 echo "Event container id: ${event_id}"
 echo "Ticket container id: ${ticket_id}"
+echo "rabbitmq container id: ${rabbitmq_id}"
