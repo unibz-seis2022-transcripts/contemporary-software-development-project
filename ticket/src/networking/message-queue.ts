@@ -2,6 +2,7 @@ import amqplib from 'amqplib';
 import promiseRetry from 'promise-retry';
 import { addEvent, deleteEvent } from '../model/event.js';
 import { deleteTicketsForEvent } from '../model/ticket.js';
+import { EventFromQueue } from '../types.js';
 
 let senderChannel: amqplib.Channel;
 let receiverChannel: amqplib.Channel;
@@ -34,7 +35,8 @@ const attemptConnection = async (
 const processMessage = (message: string): void => {
   const messageObject = JSON.parse(message);
   if (messageObject.action === 'create-event') {
-    addEvent(messageObject.event);
+    const event: EventFromQueue = messageObject.event;
+    addEvent(event);
   }
 
   if (messageObject.action === 'delete-event') {

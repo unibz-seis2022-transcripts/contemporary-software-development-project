@@ -1,4 +1,9 @@
-import { Event, IndexedEvents, IndexedPersistedEvents } from '../types.js';
+import {
+  Event,
+  EventFromQueue,
+  IndexedEvents,
+  IndexedPersistedEvents,
+} from '../types.js';
 import { getItem, setItem } from './persist.js';
 
 const eventsItemName = 'events';
@@ -16,8 +21,8 @@ export async function initEvents(): Promise<void> {
   });
 }
 
-export function addEvent(event: Event): string {
-  events[event.id] = event;
+export function addEvent(event: EventFromQueue): string {
+  events[event.id] = { ...event, date: new Date(event.date) };
   setItem<IndexedEvents>(eventsItemName, events);
 
   return event.id;

@@ -6,6 +6,10 @@ export type Event = {
   ticketsSold: number;
 };
 
+export type EventFromQueue = Omit<Event, 'date'> & {
+  date: string;
+};
+
 export type PersistedEvent = Omit<Event, 'date'> & {
   date: string;
 };

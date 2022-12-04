@@ -46,7 +46,7 @@ describe('event model', () => {
   test('addEvent stores the event and returns its id', async () => {
     await loadEventsForTest([]);
 
-    const actualEventId = addEvent(degreeCeremony);
+    const actualEventId = addEvent(degreeCeremonyPersisted);
 
     expect(actualEventId).toEqual(degreeCeremonyId);
     expect(setItem).toHaveBeenCalledWith('events', { '1234': degreeCeremony });
