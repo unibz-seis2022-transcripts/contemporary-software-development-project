@@ -6,8 +6,12 @@ import { searchTicketsHandler } from './handlers/searchTickets.js';
 import { initEvents } from './model/event.js';
 import { initStorage } from './model/persist.js';
 import { initTickets } from './model/ticket.js';
-import Consul from 'consul';
-import { getIpAddress } from './networking.js';
+import { getIpAddress } from './networking/ipAddress.js';
+import {
+  getMessageQueueAddress,
+  registerService,
+} from './networking/registry.js';
+import { initializeQueue } from './networking/message-queue.js';
 
 await initStorage('./storage');
 await initEvents();
@@ -16,15 +20,12 @@ await initTickets();
 const app = express();
 const port = 3002;
 const serviceName = 'ticket';
-
 const ipAddress = getIpAddress();
 
-const consul = new Consul({ host: 'consul', port: '8500' });
-await consul.agent.service.register({
-  name: serviceName,
-  address: ipAddress,
-  port,
-});
+await registerService(serviceName, ipAddress, port);
+const messageQueueAddress = await getMessageQueueAddress();
+
+await initializeQueue(messageQueueAddress);
 
 app.get('/', (req, res) => {
   res.send('Hello world from the ticket service!');

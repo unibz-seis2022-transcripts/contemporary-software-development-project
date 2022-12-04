@@ -6,6 +6,8 @@ import { EventSoldOutError, reserveTicketForEvent } from '../../model/event.js';
 
 jest.mock('../../model/ticket.js');
 jest.mock('../../model/event.js');
+// TODO: assert that message queue methods are called
+jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
 const res = createMock<Response>();

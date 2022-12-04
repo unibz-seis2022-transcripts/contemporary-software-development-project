@@ -6,6 +6,10 @@ import {
 } from '../types.js';
 import { v4 as uuid } from 'uuid';
 import { getItem, setItem } from './persist.js';
+import {
+  sendCancelledTicket,
+  sendReservedTicket,
+} from '../networking/message-queue.js';
 
 const ticketsItemName = 'tickets';
 
@@ -52,12 +56,12 @@ export const deleteTicket = (ticketId: string): string => {
   return eventId;
 };
 
-// TODO (2022-11-23): make sure to delete tickets when event is deleted
 export const deleteTicketsForEvent = (eventId: string): void => {
   const affectedTicketIds = Object.values(tickets)
     .filter((ticket) => ticket.eventId === eventId)
     .map((ticket) => ticket.id);
-  affectedTicketIds.forEach((ticketId) => deleteTicket(ticketId));
+  affectedTicketIds.forEach((ticketId) => delete tickets[ticketId]);
+  setItem<IndexedTickets>(ticketsItemName, tickets);
 };
 
 export const getTickets = (): Ticket[] => {

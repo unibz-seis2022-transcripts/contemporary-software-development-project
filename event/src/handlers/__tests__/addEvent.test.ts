@@ -2,21 +2,22 @@ import { NextFunction, Request, Response } from 'express';
 import { addEvent, DuplicateEventError } from '../../model/event.js';
 import { addEventHandler } from '../addEvent.js';
 import { createMock } from 'ts-auto-mock';
+import { Event } from '../../types.js';
 
 jest.mock('../../model/event.js');
+// TODO: assert that message queue methods are called
+jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
 const res = createMock<Response>();
 const next = createMock<NextFunction>();
 
 describe('add event handler', () => {
+  const mockCreatedEvent = { id: '1234' } as Partial<Event>;
+
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('adds an event to the db', () => {
-    addEventHandler(req, res, next);
-    expect(addEvent).toHaveBeenCalled();
+    jest.mocked(addEvent).mockReturnValue(mockCreatedEvent as Event);
   });
 
   const degreeCeremonyParams = {
@@ -54,8 +55,6 @@ describe('add event handler', () => {
   });
 
   it('sends the id of the created event with HTTP status 201', () => {
-    const degreeCeremonyMockId = '1234';
-    jest.mocked(addEvent).mockReturnValue(degreeCeremonyMockId);
     req.query = degreeCeremonyParams;
 
     const resSendMock = jest.fn();
@@ -64,18 +63,19 @@ describe('add event handler', () => {
     res.status = resStatusMock;
 
     addEventHandler(req, res, next);
-    expect(resSendMock).toHaveBeenCalledWith({ eventId: degreeCeremonyMockId });
+    expect(resSendMock).toHaveBeenCalledWith({ eventId: mockCreatedEvent.id });
     expect(resStatusMock).toHaveBeenCalledWith(201);
 
     jest.clearAllMocks();
 
-    const tddHandsOnId = '5678';
-    jest.mocked(addEvent).mockReturnValue(tddHandsOnId);
+    const tddHandsOnEvent = { id: '5678' } as Partial<Event>;
+
+    jest.mocked(addEvent).mockReturnValue(tddHandsOnEvent as Event);
     req.query = tddHandsOnParams;
 
     addEventHandler(req, res, next);
     expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith({ eventId: tddHandsOnId });
+    expect(resSendMock).toHaveBeenCalledWith({ eventId: tddHandsOnEvent.id });
     expect(resStatusMock).toHaveBeenCalledWith(201);
   });
 

@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { EventSoldOutError, reserveTicketForEvent } from '../model/event.js';
 import { reserveTicket } from '../model/ticket.js';
+import { sendReservedTicket } from '../networking/message-queue.js';
 import { TicketRequest } from '../types.js';
 
 export const reserveTicketHandler: RequestHandler = (req, res) => {
@@ -23,6 +24,7 @@ export const reserveTicketHandler: RequestHandler = (req, res) => {
   }
 
   const ticketId = reserveTicket(ticketRequest);
+  sendReservedTicket(ticketRequest.eventId);
 
   res.send({ ticketId });
 };

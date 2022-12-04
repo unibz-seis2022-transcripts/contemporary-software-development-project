@@ -46,7 +46,7 @@ function checkForDuplicateEvent(eventToBeAdded: EventRequest): void {
   }
 }
 
-export function addEvent(eventToBeAdded: EventRequest): string {
+export function addEvent(eventToBeAdded: EventRequest): Event {
   checkForDuplicateEvent(eventToBeAdded);
 
   const id = uuid();
@@ -60,7 +60,7 @@ export function addEvent(eventToBeAdded: EventRequest): string {
   events[id] = event;
   setItem<IndexedEvents>(eventsItemName, events);
 
-  return id;
+  return event;
 }
 
 export function getEvents(): Event[] {
@@ -70,4 +70,19 @@ export function getEvents(): Event[] {
 export function deleteEvent(id: string): void {
   delete events[id];
   setItem<IndexedEvents>(eventsItemName, events);
+}
+
+export function reserveTicketForEvent(id: string): void {
+  const event = events[id];
+
+  event.ticketsSold++;
+  setItem<IndexedEvents>(eventsItemName, events);
+}
+
+export function cancelTicketReservationForEvent(id: string): void {
+  const event = events[id];
+  if (event.ticketsSold > 0) {
+    event.ticketsSold--;
+    setItem<IndexedEvents>(eventsItemName, events);
+  }
 }

@@ -6,6 +6,8 @@ import { deleteTicketHandler } from '../deleteTicket.js';
 
 jest.mock('../../model/event.js');
 jest.mock('../../model/ticket.js');
+// TODO: assert that message queue methods are called
+jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
 const res = createMock<Response>();

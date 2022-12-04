@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { addEvent, DuplicateEventError } from '../model/event.js';
-import { EventRequest } from '../types.js';
+import { sendCreatedEvent } from '../networking/message-queue.js';
+import { Event, EventRequest } from '../types.js';
 
 export const addEventHandler: RequestHandler = (req, res) => {
   const eventRequest: EventRequest = {
@@ -9,22 +10,25 @@ export const addEventHandler: RequestHandler = (req, res) => {
     ticketsTotal: +req.query['tickets'],
   };
 
-  let id: string;
+  let event: Event;
 
   try {
-    id = addEvent(eventRequest);
+    event = addEvent(eventRequest);
   } catch (error) {
     if (error instanceof DuplicateEventError) {
       res.status(400);
       res.send('Duplicate Event Error.');
       return;
     } else {
+      console.log('An unknown error occured: ', error);
       res.status(500);
       res.send('An unknown error occured.');
       return;
     }
   }
 
-  res.status(201).send({ eventId: id });
+  sendCreatedEvent(event);
+
+  res.status(201).send({ eventId: event.id });
   return;
 };

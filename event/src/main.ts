@@ -4,8 +4,12 @@ import { deleteEventHandler } from './handlers/deleteEvent.js';
 import { getEventsHandler } from './handlers/getEvents.js';
 import { initEvents } from './model/event.js';
 import { initStorage } from './model/persist.js';
-import Consul from 'consul';
-import { getIpAddress } from './networking.js';
+import { initializeQueue } from './networking/message-queue.js';
+import {
+  getMessageQueueAddress,
+  registerService,
+} from './networking/registry.js';
+import { getIpAddress } from './networking/ipAddress.js';
 
 await initStorage('./storage');
 await initEvents();
@@ -13,15 +17,12 @@ await initEvents();
 const app = express();
 const port = 3001;
 const serviceName = 'event';
-
 const ipAddress = getIpAddress();
 
-const consul = new Consul({ host: 'consul', port: '8500' });
-await consul.agent.service.register({
-  name: serviceName,
-  address: ipAddress,
-  port,
-});
+await registerService(serviceName, ipAddress, port);
+const messageQueueAddress = await getMessageQueueAddress();
+
+await initializeQueue(messageQueueAddress);
 
 app.get('/', (req, res) => {
   res.send('Hello world from the event service!');
