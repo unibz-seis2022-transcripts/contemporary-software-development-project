@@ -6,10 +6,6 @@ import {
 } from '../types.js';
 import { v4 as uuid } from 'uuid';
 import { getItem, setItem } from './persist.js';
-import {
-  sendCancelledTicket,
-  sendReservedTicket,
-} from '../networking/message-queue.js';
 
 const ticketsItemName = 'tickets';
 
