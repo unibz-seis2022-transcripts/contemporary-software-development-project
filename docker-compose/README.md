@@ -10,6 +10,8 @@ Execute the following to launch the container via docker compose in detached mod
 docker-compose up -d
 ```
 
+After executing this command, it takes a few seconds until the core services are ready, this is due to the boot-up time of the message queue. Subsequently the API endpoints can be called using the port of the nginx reverse proxy (by default `8080` on your local machine).
+
 Use the following to shut down the service:
 
 ```bash
