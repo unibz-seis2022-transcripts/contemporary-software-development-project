@@ -3,10 +3,10 @@ import { reserveTicket } from '../../model/ticket.js';
 import { createMock } from 'ts-auto-mock';
 import { NextFunction, Request, Response } from 'express';
 import { EventSoldOutError, reserveTicketForEvent } from '../../model/event.js';
+import { sendReservedTicket } from '../../networking/message-queue.js';
 
 jest.mock('../../model/ticket.js');
 jest.mock('../../model/event.js');
-// TODO: assert that message queue methods are called
 jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
@@ -14,99 +14,84 @@ const res = createMock<Response>();
 const next = createMock<NextFunction>();
 
 describe('reserve ticket handler', () => {
+  const ticketRequest = {
+    name: 'Mickey Mouse',
+    event: 'an event id',
+  };
+  const ticketId = '1234';
+
+  beforeAll(() => {
+    req.query = ticketRequest;
+    res.send = jest.fn();
+
+    jest.mocked(reserveTicket).mockReturnValue(ticketId);
+
+    reserveTicketHandler(req, res, next);
+  });
+
   it('reserves a ticket', () => {
-    const ticketRequest1 = {
-      name: 'Mickey Mouse',
-      event: 'an event id',
-    };
-
-    req.query = ticketRequest1;
-
-    reserveTicketHandler(req, res, next);
-
     expect(reserveTicketForEvent).toHaveBeenCalledTimes(1);
-    expect(reserveTicketForEvent).toHaveBeenCalledWith(ticketRequest1.event);
+    expect(reserveTicketForEvent).toHaveBeenCalledWith(ticketRequest.event);
     expect(reserveTicket).toHaveBeenCalledTimes(1);
     expect(reserveTicket).toHaveBeenCalledWith({
-      owner: ticketRequest1.name,
-      eventId: ticketRequest1.event,
-    });
-
-    jest.clearAllMocks();
-
-    const ticketRequest2 = {
-      name: 'Donald Duck',
-      event: 'another event id',
-    };
-
-    req.query = ticketRequest2;
-
-    reserveTicketHandler(req, res, next);
-
-    expect(reserveTicketForEvent).toHaveBeenCalledTimes(1);
-    expect(reserveTicketForEvent).toHaveBeenCalledWith(ticketRequest2.event);
-    expect(reserveTicket).toHaveBeenCalledTimes(1);
-    expect(reserveTicket).toHaveBeenCalledWith({
-      owner: ticketRequest2.name,
-      eventId: ticketRequest2.event,
+      owner: ticketRequest.name,
+      eventId: ticketRequest.event,
     });
   });
 
   it('sends the ticket id as response', () => {
-    const resSendMock = jest.fn();
-    res.send = resSendMock;
-
-    const ticketId1 = '1234';
-    jest.mocked(reserveTicket).mockReturnValue(ticketId1);
-
-    reserveTicketHandler(req, res, next);
-
-    expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith({ ticketId: ticketId1 });
-
-    jest.clearAllMocks();
-
-    jest.mocked(reserveTicket).mockReturnValue(ticketId1);
-
-    reserveTicketHandler(req, res, next);
-
-    expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith({ ticketId: ticketId1 });
+    expect(res.send).toHaveBeenCalledTimes(1);
+    expect(res.send).toHaveBeenCalledWith({ ticketId });
   });
 
-  it('sends an error message and HTTP status code 400 if there are no more tickets available', () => {
-    jest.mocked(reserveTicketForEvent).mockImplementation(() => {
-      throw new EventSoldOutError();
-    });
-
-    const resSendMock = jest.fn();
-    res.send = resSendMock;
-
-    const resStatusMock = jest.fn();
-    res.status = resStatusMock;
-
-    reserveTicketHandler(req, res, next);
-
-    expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith('Event sold out.');
-    expect(resStatusMock).toHaveBeenCalledWith(400);
+  it('sends the id of the affected event to the message queue', () => {
+    expect(sendReservedTicket).toHaveBeenCalledTimes(1);
+    expect(sendReservedTicket).toHaveBeenCalledWith(ticketRequest.event);
   });
 
-  it('sends an error message and HTTP status code 500 if any other error occurs', () => {
-    jest.mocked(reserveTicketForEvent).mockImplementation(() => {
-      throw new Error();
+  describe('given no more tickets are available', () => {
+    beforeAll(() => {
+      jest.mocked(reserveTicketForEvent).mockImplementation(() => {
+        throw new EventSoldOutError();
+      });
+
+      res.send = jest.fn();
+      res.status = jest.fn();
+
+      reserveTicketHandler(req, res, next);
     });
 
-    const resSendMock = jest.fn();
-    res.send = resSendMock;
+    it('sends an error message', () => {
+      expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith('Event sold out.');
+    });
 
-    const resStatusMock = jest.fn();
-    res.status = resStatusMock;
+    it('sends HTTP status code 400', () => {
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+  });
 
-    reserveTicketHandler(req, res, next);
+  describe('given any other error occurs', () => {
+    beforeAll(() => {
+      jest.mocked(reserveTicketForEvent).mockImplementation(() => {
+        throw new Error();
+      });
 
-    expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith('An unexpected error occured.');
-    expect(resStatusMock).toHaveBeenCalledWith(500);
+      res.send = jest.fn();
+      res.status = jest.fn();
+
+      reserveTicketHandler(req, res, next);
+    });
+
+    it('sends an error message', () => {
+      expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith('An unexpected error occured.');
+    });
+
+    it('sends HTTP status code 500', () => {
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 });

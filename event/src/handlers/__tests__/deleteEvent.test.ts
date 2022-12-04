@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { createMock } from 'ts-auto-mock';
 import { deleteEvent } from '../../model/event.js';
+import { sendDeletedEvent } from '../../networking/message-queue.js';
 import { deleteEventHandler } from '../deleteEvent.js';
 
 jest.mock('../../model/event.js');
-// TODO: assert that message queue methods are called
 jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
@@ -40,7 +40,10 @@ describe('delete event handler', () => {
     expect(resStatusMock).toHaveBeenCalledWith(200);
   });
 
-  it.skip('deletes the related tickets', () => {
-    // TODO (2022-11-23): assert tickets are being deleted
+  it('sends a message to the mq with the id of the deleted event', () => {
+    const id = '1234';
+    req.query = { id: id };
+    deleteEventHandler(req, res, next);
+    expect(sendDeletedEvent).toHaveBeenCalledWith(id);
   });
 });

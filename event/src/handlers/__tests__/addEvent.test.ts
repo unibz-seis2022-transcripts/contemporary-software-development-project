@@ -3,9 +3,9 @@ import { addEvent, DuplicateEventError } from '../../model/event.js';
 import { addEventHandler } from '../addEvent.js';
 import { createMock } from 'ts-auto-mock';
 import { Event } from '../../types.js';
+import { sendCreatedEvent } from '../../networking/message-queue.js';
 
 jest.mock('../../model/event.js');
-// TODO: assert that message queue methods are called
 jest.mock('../../networking/message-queue.js');
 
 const req = createMock<Request>();
@@ -79,6 +79,13 @@ describe('add event handler', () => {
     expect(resStatusMock).toHaveBeenCalledWith(201);
   });
 
+  it('sends a message to the mq with the newly created event', () => {
+    req.query = degreeCeremonyParams;
+
+    addEventHandler(req, res, next);
+    expect(sendCreatedEvent).toHaveBeenCalledWith(mockCreatedEvent);
+  });
+
   it('sends an error message and HTTP status 400 if the event already exists', () => {
     jest.mocked(addEvent).mockImplementation(() => {
       throw new DuplicateEventError();
@@ -94,6 +101,7 @@ describe('add event handler', () => {
     expect(resSendMock).toHaveBeenCalledTimes(1);
     expect(resSendMock).toHaveBeenCalledWith('Duplicate Event Error.');
     expect(resStatusMock).toHaveBeenCalledWith(400);
+    expect(sendCreatedEvent).not.toHaveBeenCalled();
   });
 
   it('sends an error message and HTTP status 500 if any other error occurs', () => {
@@ -111,5 +119,6 @@ describe('add event handler', () => {
     expect(resSendMock).toHaveBeenCalledTimes(1);
     expect(resSendMock).toHaveBeenCalledWith('An unknown error occured.');
     expect(resStatusMock).toHaveBeenCalledWith(500);
+    expect(sendCreatedEvent).not.toHaveBeenCalled();
   });
 });
