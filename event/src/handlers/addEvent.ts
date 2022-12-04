@@ -16,8 +16,9 @@ export const addEventHandler: RequestHandler = (req, res) => {
     event = addEvent(eventRequest);
   } catch (error) {
     if (error instanceof DuplicateEventError) {
-      res.status(400);
-      res.send('Duplicate Event Error.');
+      const status = 400;
+      res.status(status);
+      res.send({ status, message: 'Duplicate event error' });
       return;
     } else {
       console.log('An unknown error occured: ', error);

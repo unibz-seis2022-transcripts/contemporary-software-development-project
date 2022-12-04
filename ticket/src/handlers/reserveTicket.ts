@@ -14,8 +14,9 @@ export const reserveTicketHandler: RequestHandler = (req, res) => {
     reserveTicketForEvent(ticketRequest.eventId);
   } catch (error) {
     if (error instanceof EventSoldOutError) {
-      res.status(400);
-      res.send('Event sold out.');
+      const status = 400;
+      res.status(status);
+      res.send({ status, message: 'Event sold out' });
       return;
     }
     res.status(500);
