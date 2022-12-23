@@ -15,17 +15,17 @@ services:
       - ./rabbitmq:/etc/rabbitmq
     depends_on:
       - "consul"
-  event:
-    image: teilkasko/tickent-event
-    volumes:
-      - ./storage/event:/app/storage
-    depends_on:
-      - "consul"
-      - "message-queue"
   ticket:
     image: teilkasko/tickent-ticket
     volumes:
       - ./storage/ticket:/app/storage
+    depends_on:
+      - "consul"
+      - "message-queue"
+  event:
+    image: teilkasko/tickent-event
+    volumes:
+      - ./storage/event:/app/storage
     depends_on:
       - "consul"
       - "message-queue"
