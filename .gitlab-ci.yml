@@ -3,6 +3,8 @@ stages:
 
 build-code-job:
   stage: build
+  tags:
+    - build
   script:
     - echo "Building the project"
     - cd docker-compose
