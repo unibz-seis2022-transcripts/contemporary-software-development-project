@@ -2,8 +2,8 @@ stages:
   - build
 
 build-code-job:
-stage: build
-script:
-  - echo "Building the project"
-  - cd docker-compose
-  - docker-compose create --build
+  stage: build
+  script:
+    - echo "Building the project"
+    - cd docker-compose
+    - docker-compose create --build
