@@ -8,4 +8,4 @@ build-code-job:
   script:
     - echo "Building the project"
     - cd docker-compose
-    - sudo docker-compose create --build
+    - docker-compose create --build
