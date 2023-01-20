@@ -16,14 +16,14 @@ services:
     depends_on:
       - "consul"
   ticket:
-    image: teilkasko/tickent-ticket
+    build: ../ticket
     volumes:
       - ./storage/ticket:/app/storage
     depends_on:
       - "consul"
       - "message-queue"
   event:
-    image: teilkasko/tickent-event
+    build: ../event
     volumes:
       - ./storage/event:/app/storage
     depends_on:
