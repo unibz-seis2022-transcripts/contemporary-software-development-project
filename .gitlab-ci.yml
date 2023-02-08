@@ -11,11 +11,9 @@ lint-test:
     - cd event
     - npm i
     - npm run lint-and-test
-    - touch foo
     - cd ../ticket
     - npm i
     - npm run lint-and-test
-    - touch foo
 
 transpile-code:
   stage: build-and-test
@@ -26,11 +24,9 @@ transpile-code:
     - cd event
     - npm i
     - npm run build
-    - touch bar
     - cd ../ticket
     - npm i
     - npm run build
-    - touch bar
   artifacts:
     paths:
       - event/build
@@ -41,8 +37,5 @@ create-image:
   tags:
     - create-image
   script:
-    - ls -lha
-    - ls -lha event
-    - ls -lha ticket
     - cd docker-compose
     - docker-compose create --build
