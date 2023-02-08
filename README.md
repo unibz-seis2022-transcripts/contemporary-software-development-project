@@ -7,4 +7,6 @@
 3. Register your computer as runner
    1. Run `sudo gitlab-runner register`
    2. Enter the instance URL and registration token from the Gitlab settings page
-   3. Start the runner using `sudo gitlab-runner run` (now it should show up on the Gitlab runners page)
+   3. As tag enter `build`
+   4. As executor choose `shell`
+   5. Start the runner using `sudo gitlab-runner run` (now it should show up on the Gitlab runners page)
