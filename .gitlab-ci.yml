@@ -38,4 +38,16 @@ create-image:
     - create-image
   script:
     - cd docker-compose
-    - docker-compose create --build
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker-compose build
+    - docker-compose push
+
+test_services:
+  stage: create-image
+  tags:
+    - create-image
+  script:
+    - docker-compose pull
+    - docker-compose up -d
+    - docker-compose ps
+    - docker-compose logs -f event
