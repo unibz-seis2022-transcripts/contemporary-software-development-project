@@ -6,6 +6,8 @@ build-code-job:
   tags:
     - build
   script:
-    - echo "Building the project"
+    - ls -lha event
+    - ls -lha ticket
+    - echo "Building the project "
     - cd docker-compose
-    - docker-compose up --no-start
+    - docker-compose create --build
