@@ -63,7 +63,10 @@ describe('reserve ticket handler', () => {
 
     it('sends an error message', () => {
       expect(res.send).toHaveBeenCalledTimes(1);
-      expect(res.send).toHaveBeenCalledWith('Event sold out.');
+      expect(res.send).toHaveBeenCalledWith({
+        message: 'Event sold out',
+        status: 400,
+      });
     });
 
     it('sends HTTP status code 400', () => {
