@@ -3,11 +3,13 @@ stages:
 
 build-code-job:
   stage: build
+  image: node:alpine
   tags:
     - build
   script:
-    - ls -lha event
-    - ls -lha ticket
-    - echo "Building the project "
-    - cd docker-compose
+    - cd event
+    - npm run build
+    - cd ../ticket
+    - npm run build
+    - cd ../docker-compose
     - docker-compose create --build
