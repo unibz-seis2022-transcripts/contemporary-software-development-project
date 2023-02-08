@@ -1,17 +1,48 @@
 stages:
-  - build
+  - build-and-test
+  - create-image
 
-build-code-job:
-  stage: build
-  image: node:alpine
+lint-test:
+  stage: build-and-test
   tags:
-    - build
+    - build-and-test
+  image: node:alpine
   script:
     - cd event
     - npm i
-    - npm run build
+    - npm run lint-and-test
+    - touch foo
     - cd ../ticket
     - npm i
-    - npm run build
-    - cd ../docker-compose
+    - npm run lint-and-test
+    - touch foo
+
+transpile-code:
+  stage: build-and-test
+  tags:
+    - build-and-test
+  image: node:alpine
+  script:
+    - cd event
+    - npm i
+    - npm run lint-and-test
+    - touch bar
+    - cd ../ticket
+    - npm i
+    - npm run lint-and-test
+    - touch bar
+  artifacts:
+    paths:
+      - event/build
+      - ticket/build
+
+create-image:
+  stage: create-image
+  tags:
+    - create-image
+  script:
+    - ls -lha
+    - ls -lha event
+    - ls -lha ticket
+    - cd docker-compose
     - docker-compose create --build
