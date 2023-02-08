@@ -28,6 +28,8 @@ app.get('/', (req, res) => {
   res.send('Hello world from the event service!');
 });
 
+throw Error('This is intended to let the app fail');
+
 const router = express.Router();
 router.post('/addEvent', addEventHandler);
 router.post('/deleteevent', deleteEventHandler);
