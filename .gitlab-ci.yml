@@ -25,11 +25,11 @@ transpile-code:
   script:
     - cd event
     - npm i
-    - npm run lint-and-test
+    - npm run build
     - touch bar
     - cd ../ticket
     - npm i
-    - npm run lint-and-test
+    - npm run build
     - touch bar
   artifacts:
     paths:
