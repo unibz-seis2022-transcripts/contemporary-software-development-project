@@ -99,7 +99,10 @@ describe('add event handler', () => {
     addEventHandler(req, res, next);
 
     expect(resSendMock).toHaveBeenCalledTimes(1);
-    expect(resSendMock).toHaveBeenCalledWith('Duplicate Event Error.');
+    expect(resSendMock).toHaveBeenCalledWith({
+      message: 'Duplicate event error',
+      status: 400,
+    });
     expect(resStatusMock).toHaveBeenCalledWith(400);
     expect(sendCreatedEvent).not.toHaveBeenCalled();
   });
@@ -108,6 +111,7 @@ describe('add event handler', () => {
     jest.mocked(addEvent).mockImplementation(() => {
       throw new Error();
     });
+    jest.mocked(console.log);
 
     const resSendMock = jest.fn();
     const resStatusMock = jest.fn().mockReturnValue(res);
