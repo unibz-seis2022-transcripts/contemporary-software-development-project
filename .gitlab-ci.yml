@@ -8,8 +8,10 @@ build-code-job:
     - build
   script:
     - cd event
+    - npm i
     - npm run build
     - cd ../ticket
+    - npm i
     - npm run build
     - cd ../docker-compose
     - docker-compose create --build
