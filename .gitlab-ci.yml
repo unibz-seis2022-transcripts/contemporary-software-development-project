@@ -31,6 +31,7 @@ transpile-code:
     paths:
       - event/build
       - ticket/build
+    expire_in: 1 minute
 
 create-image:
   stage: create-image
