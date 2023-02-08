@@ -38,7 +38,7 @@ create-image:
     - create-image
   script:
     - cd docker-compose
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.inf.unibz.it
     - docker-compose build
     - docker-compose push
 
