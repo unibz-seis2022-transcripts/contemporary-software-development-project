@@ -1,11 +1,30 @@
 stages:
-  - build
+  - build-and-test
+  - create-image
 
-build-code-job:
-  stage: build
+build-and-test:
+  stage: build-and-test
   tags:
-    - build
+    - build-and-test
+  image: node:alpine
   script:
-    - echo "Building the project"
+    - cd event
+    - npm i
+    - npm run lint-and-test
+    - npm run build
+    - cd ../ticket
+    - npm i
+    - npm run lint-and-test
+    - npm run build
+  artifacts:
+    paths:
+      - event/build
+      - ticket/build
+
+create-image:
+  stage: create-image
+  tags:
+    - create-image
+  script:
     - cd docker-compose
-    - docker-compose up --no-start
+    - docker-compose create --build
