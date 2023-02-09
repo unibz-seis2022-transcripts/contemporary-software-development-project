@@ -1,22 +1,20 @@
 #!/bin/bash
 set -e
 
-echo "Now building and tagging the event service"
+echo "Now building the event service"
 
 cd event
 npm run build
-sudo docker build . -t teilkasko/tickent-event
-echo "Successfully tagged the event service"
+echo "Successfully built the event service"
 
-echo "Now building and tagging the ticket service"
+echo "Now building the ticket service"
 cd ../ticket
 npm run build
-sudo docker build . -t teilkasko/tickent-ticket
-echo "Successfully tagged the ticket service"
+echo "Successfully built the ticket service"
 
 cd ../docker-compose
 sudo docker-compose down
-sudo docker-compose up -d
+sudo docker-compose up -d --build
 
 event_container_line=$(sudo docker container ls | grep event)
 event_id=${event_container_line:0:12}
