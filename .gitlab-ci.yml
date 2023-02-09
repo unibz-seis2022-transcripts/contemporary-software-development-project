@@ -2,38 +2,24 @@ stages:
   - build-and-test
   - create-image
 
-lint-test:
+build-and-test:
   stage: build-and-test
   tags:
     - build-and-test
   image: node:alpine
-  cache: []
   script:
     - cd event
     - npm i
     - npm run lint-and-test
-    - cd ../ticket
-    - npm i
-    - npm run lint-and-test
-
-transpile-code:
-  stage: build-and-test
-  tags:
-    - build-and-test
-  image: node:alpine
-  cache: []
-  script:
-    - cd event
-    - npm i
     - npm run build
     - cd ../ticket
     - npm i
+    - npm run lint-and-test
     - npm run build
   artifacts:
     paths:
       - event/build
       - ticket/build
-    expire_in: 1 minute
 
 create-image:
   stage: create-image
